@@ -2,6 +2,7 @@
 #define UTIL_INC_VECTOR_HPP_
 
 #include <array>
+#include <cmath>
 
 namespace Mat
 {
@@ -19,6 +20,10 @@ public:
 	inline float& operator()(u_int index);
 	inline const float& operator()(u_int index) const;
 
+	inline bool operator== (const Vector<length>& other) const;
+	inline bool operator!= (const Vector<length>& other) const;
+	inline bool Equals(const Vector<length>& other, float epsilon = 0.001f) const;
+
 	inline Vector<length>& operator+= (const Vector<length>& other);
 	inline Vector<length>& operator-= (const Vector<length>& other);
 
@@ -29,6 +34,7 @@ public:
 	inline float operator*(const Vector<length>& other) const;
 
 	inline u_int Size(){return length;}
+
 protected:
 	std::array<float, length> _values;
 };
@@ -39,10 +45,18 @@ template <u_int length>
 Vector<length>::Vector() {static_assert(length != 0, "Vector length must be positive!");}
 
 template <u_int length>
-Vector<length>::Vector(float val) {static_assert(length != 0, "Vector length must be positive!"); for(auto &v : _values) v = val;}
+Vector<length>::Vector(float val)
+{
+	static_assert(length != 0, "Vector length must be positive!");
+	for(auto &v : _values) v = val;
+}
 
 template <u_int length>
-Vector<length>::Vector(const std::array<float, length>& values) {static_assert(length != 0, "Vector length must be positive!"); _values = values;}
+Vector<length>::Vector(const std::array<float, length>& values)
+{
+	static_assert(length != 0, "Vector length must be positive!");
+	 _values = values;
+}
 
 template <u_int length>
 float& Vector<length>::operator()(u_int index)
@@ -54,6 +68,29 @@ template <u_int length>
 const float& Vector<length>::operator()(u_int index) const
 {
 	return _values[index];
+}
+
+template <u_int length>
+bool Vector<length>::operator==(const Vector<length>& other) const
+{
+	return _values == other._values;
+}
+
+template <u_int length>
+bool Vector<length>::operator!=(const Vector<length>& other) const
+{
+	return _values != other._values;
+}
+
+template <u_int length>
+bool Vector<length>::Equals(const Vector<length>& other, float epsilon) const
+{
+	bool result = true;
+	for(u_int i = 0; i < length && result; ++i)
+	{
+		result = result && (fabsf(_values[i] - other._values[i]) < epsilon);
+	}
+	return result;
 }
 
 template <u_int length>
