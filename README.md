@@ -2,5 +2,5 @@
 Simple library offering matrices and arithmetic operators implementation based on templates
 
 TODO:
-*Documentation in doxygen
-*Tests
+* Documentation in doxygen
+* Tests
