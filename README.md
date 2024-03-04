@@ -1,2 +1,2 @@
 # MatrixLibrary
-Simple library offering matrices and mathematical operators implementation based on templates
+Simple library offering matrices and arithmetic operators implementation based on templates
