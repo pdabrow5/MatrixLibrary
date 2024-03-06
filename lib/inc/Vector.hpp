@@ -1,6 +1,7 @@
 #ifndef UTIL_INC_VECTOR_HPP_
 #define UTIL_INC_VECTOR_HPP_
 
+#include <algorithm>
 #include <array>
 #include <cmath>
 
@@ -22,18 +23,28 @@ public:
 
 	inline bool operator== (const Vector<length>& other) const;
 	inline bool operator!= (const Vector<length>& other) const;
-	inline bool Equals(const Vector<length>& other, float epsilon = 0.001f) const;
+	inline bool Equals(const Vector<length>& other, float epsilon = 0.000001f) const;
 
 	inline Vector<length>& operator+= (const Vector<length>& other);
-	inline Vector<length>& operator-= (const Vector<length>& other);
-
 	inline Vector<length>& operator+= (float val);
+
+	inline Vector<length>& operator-= (const Vector<length>& other);
 	inline Vector<length>& operator-= (float val);
 
+	inline Vector<length> operator+ (const Vector<length>& other) const;
+	inline Vector<length> operator+ (float val) const;
+
+	inline Vector<length> operator- (const Vector<length>& other) const;
+	inline Vector<length> operator- (float val) const;
+
 	inline Vector<length>& operator*= (float f);
+
+	Vector<length> operator*(float val) const;
 	inline float operator*(const Vector<length>& other) const;
 
-	inline u_int Size(){return length;}
+	inline u_int Size() const {return length;}
+
+	inline float Norm() const {float result = 0.0f; std::for_each(_values.begin(), _values.end(), [&result](float n){result += n * n;}); return std::sqrt(result);}
 
 protected:
 	std::array<float, length> _values;
@@ -122,10 +133,50 @@ Vector<length>& Vector<length>::operator-=(float val)
 }
 
 template <u_int length>
+Vector<length> Vector<length>::operator+(const Vector<length>& other) const
+{
+	Vector<length> result = *this;
+	result += other;
+	return result;
+}
+
+template <u_int length>
+Vector<length> Vector<length>::operator-(const Vector<length>& other) const
+{
+	Vector<length> result = *this;
+	result -= other;
+	return result;
+}
+
+template <u_int length>
+Vector<length> Vector<length>::operator+(float val) const
+{
+	Vector<length> result = *this;
+	result += val;
+	return result;
+}
+
+template <u_int length>
+Vector<length> Vector<length>::operator-(float val) const
+{
+	Vector<length> result = *this;
+	result -= val;
+	return result;
+}
+
+template <u_int length>
 Vector<length>& Vector<length>::operator*=(float val)
 {
 	for(u_int i = 0; i < _values.size(); ++i) _values[i] *= val;
 	return *this;
+}
+
+template <u_int length>
+Vector<length> Vector<length>::operator*(float val) const
+{
+	Vector<length> result = *this;
+	result *= val;
+	return result;
 }
 
 template <u_int length>

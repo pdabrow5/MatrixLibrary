@@ -3,6 +3,9 @@
 
 #include "../lib/inc/Vector.hpp"
 
+#include <iostream>
+#include <cmath>
+
 TEST_CASE("Test default constructor", "[Vector]")
 {
     CHECK_NOTHROW(Mat::Vector<1>());
@@ -99,4 +102,48 @@ TEST_CASE("Test operator+=(float val)", "[Vector]")
     const Mat::Vector<5> V4({-3, -4, -5, -4, -3});
     V3 += -2.0f;
     CHECK(V3 == V4);
+}
+
+TEST_CASE("Test Equals()", "[Vector]")
+{
+    const Mat::Vector<5> V1({1, 2, 3, 4, 5});
+    const Mat::Vector<5> V2({2.5, 3.5, 4.5, 5.5, 6.5});
+    CHECK(V1.Equals(V2) == false);
+    CHECK(V1.Equals(V2, 1.6) == true);
+    CHECK(V1.Equals((V2 - 3.0f), 1.5001) == true); // V2 - 3 = {-0.5, 0.5, 1.5, 2.5, 3.5}
+    CHECK(V1.Equals((V2 - 3.0f), 1.4999) == false); // V2 - 3 = {-0.5, 0.5, 1.5, 2.5, 3.5}
+}
+
+TEST_CASE("Test operator*=(float val)", "[Vector]")
+{
+    Mat::Vector<5> V1({1.5, 2.5, 3.5, 4.5, 5.5});
+    Mat::Vector<5> V2({4.5, 7.5, 10.5, 13.5, 16.5});
+    V1 *= 2.0f;
+    V1 *= 3.0f;
+    V2 *= (2.0f / 3.0f);
+    V2 *= 3.0f;
+    CHECK(V1.Equals(V2));
+}
+
+TEST_CASE("Test operator*(const Vector<length>& other)", "[Vector]")
+{
+    Mat::Vector<5> V1({1.5, 2.5, 3.5, 4.5, 5.5});
+    Mat::Vector<5> V2({4.5, 7.5, 10.5, 13.5, 16.5});
+    CHECK((V1 * V2) == 213.75);
+
+    Mat::Vector<2> V3(-1.0f);
+    Mat::Vector<2> V4(3.5);
+    CHECK((V3 * V4) == -7.0f);
+}
+
+TEST_CASE("Test Norm()", "[Vector]")
+{
+    Mat::Vector<100> V(1);
+    CHECK(V.Norm() == 10.0f);
+
+    Mat::Vector<5> V1({1.5, 2.5, 3.5, 4.5, 5.5});
+    CHECK(std::sqrt(V1 * V1) == V1.Norm());
+
+    Mat::Vector<5> V2({4.5, 7.5, 10.5, 13.5, 16.5});
+    CHECK(std::sqrt(V2 * V2) == V2.Norm());
 }
