@@ -37,7 +37,7 @@ public:
 	inline Vector<length> operator- (const Vector<length>& other) const;
 	inline Vector<length> operator- (float val) const;
 
-	inline Vector<length>& operator*= (float f);
+	inline Vector<length>& operator*= (float val);
 
 	Vector<length> operator*(float val) const;
 	inline float operator*(const Vector<length>& other) const;
@@ -53,19 +53,19 @@ protected:
 //IMPLEMENTATION
 
 template <u_int length>
-Vector<length>::Vector() {static_assert(length != 0, "Vector length must be positive!");}
+Vector<length>::Vector() {static_assert(length > 0, "Vector length must be positive!");}
 
 template <u_int length>
 Vector<length>::Vector(float val)
 {
-	static_assert(length != 0, "Vector length must be positive!");
+	static_assert(length > 0, "Vector length must be positive!");
 	for(auto &v : _values) v = val;
 }
 
 template <u_int length>
 Vector<length>::Vector(const std::array<float, length>& values)
 {
-	static_assert(length != 0, "Vector length must be positive!");
+	static_assert(length > 0, "Vector length must be positive!");
 	 _values = values;
 }
 

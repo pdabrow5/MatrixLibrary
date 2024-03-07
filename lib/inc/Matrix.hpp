@@ -14,10 +14,11 @@ using u_short = unsigned char;
 using MatShape = std::pair<u_short, u_short>;
 
 template <u_short heigth, u_short width>
-class Matrix : private Vector<heigth * width>
+class Matrix
 {
 public:
     using BaseVector = Vector<heigth * width>;
+
 	Matrix();
 	explicit Matrix(float val);
 	explicit Matrix(const std::array<float, heigth*width>& values);
@@ -25,79 +26,153 @@ public:
 	inline float& operator()(u_short row, u_short col);
 	inline const float& operator()(u_short row, u_short col) const;
 
-	inline Matrix<heigth, width>& operator+= (const Matrix<heigth, width>& other);
-	inline Matrix<heigth, width>& operator-= (const Matrix<heigth, width>& other);
+	inline bool operator== (const Matrix<heigth, width>& other) const;
+	inline bool operator!= (const Matrix<heigth, width>& other) const;
+	inline bool Equals(const Matrix<heigth, width>& other, float epsilon = 0.000001f) const;
 
+	inline Matrix<heigth, width>& operator+= (const Matrix<heigth, width>& other);
 	inline Matrix<heigth, width>& operator+= (float val);
+
+	inline Matrix<heigth, width>& operator-= (const Matrix<heigth, width>& other);
 	inline Matrix<heigth, width>& operator-= (float val);
 
-	inline Matrix<heigth, width>& operator*= (float f);
+	inline Matrix<heigth, width> operator+ (const Matrix<heigth, width>& other) const;
+	inline Matrix<heigth, width> operator+ (float val) const;
+
+	inline Matrix<heigth, width> operator- (const Matrix<heigth, width>& other) const;
+	inline Matrix<heigth, width> operator- (float val) const;
+
+	inline Matrix<heigth, width>& operator*= (float val);
+	inline Matrix<heigth, width> operator* (float val) const;
+
 	template <u_short other_width>
 	Matrix<heigth, other_width> operator*(const Matrix<width, other_width>& other) const;
 
 	template <u_short other_width>
 	void Multiply(const Matrix<width, other_width>& other, Matrix<heigth, other_width>& result) const;
 
-	const MatShape& Shape() const;
+	inline u_int Size() {return heigth * width;}
+	inline const MatShape& Shape() const;
 	static constexpr MatShape shape{heigth, width};
+private:
+	BaseVector _vector;
 };
 
 template <u_short heigth, u_short width>
 Matrix<heigth, width>::Matrix() {static_assert(heigth > 0 && width > 0, "Matrix width and heigth must be positive!");}
 
 template <u_short heigth, u_short width>
-Matrix<heigth, width>::Matrix(float val): Vector<heigth*width>(val) {static_assert(heigth > 0 && width > 0, "Matrix width and heigth must be positive!");}
+Matrix<heigth, width>::Matrix(float val): _vector(val) {static_assert(heigth > 0 && width > 0, "Matrix width and heigth must be positive!");}
 
 template <u_short heigth, u_short width>
-Matrix<heigth, width>::Matrix(const std::array<float, heigth*width>& values): Vector<heigth*width>(values) {static_assert(heigth > 0 && width > 0, "Matrix width and heigth must be positive!");}
+Matrix<heigth, width>::Matrix(const std::array<float, heigth*width>& values): _vector(values) {static_assert(heigth > 0 && width > 0, "Matrix width and heigth must be positive!");}
 
 template <u_short heigth, u_short width>
 float& Matrix<heigth, width>::operator()(u_short row, u_short col)
 {
 	u_int index = width * row + col;
-	return Vector<heigth * width>::operator()(index);
+	return _vector(index);
 }
 
 template <u_short heigth, u_short width>
 const float& Matrix<heigth, width>::operator()(u_short row, u_short col) const
 {
 	u_int index = width * row + col;
-	return Vector<heigth * width>::operator()(index);
+	return _vector(index);
 }
 
 template <u_short heigth, u_short width>
-Matrix<heigth, width>& Matrix<heigth, width>::operator+=(const Matrix<heigth, width>& other)
+inline bool Matrix<heigth, width>::operator==(const Matrix<heigth, width> &other) const
 {
-	BaseVector::operator+=(other);
+    return _vector==other._vector;
+}
+
+template <u_short heigth, u_short width>
+inline bool Matrix<heigth, width>::operator!=(const Matrix<heigth, width> &other) const
+{
+    return _vector!=other._vector;
+}
+
+template <u_short heigth, u_short width>
+inline bool Matrix<heigth, width>::Equals(const Matrix<heigth, width> &other, float epsilon) const
+{
+    return _vector.Equals(other._vector, epsilon);
+}
+
+template <u_short heigth, u_short width>
+inline Matrix<heigth, width> &Matrix<heigth, width>::operator+=(const Matrix<heigth, width> &other)
+{
+    _vector += other._vector;
 	return *this;
 }
 
 template <u_short heigth, u_short width>
-Matrix<heigth, width>& Matrix<heigth, width>::operator-=(const Matrix<heigth, width>& other)
+inline Matrix<heigth, width> &Matrix<heigth, width>::operator+=(float val)
 {
-	Vector<heigth * width>::operator-=(other);
+    _vector += val;
 	return *this;
 }
 
 template <u_short heigth, u_short width>
-Matrix<heigth, width>& Matrix<heigth, width>::operator+=(float val)
+inline Matrix<heigth, width> &Matrix<heigth, width>::operator-=(const Matrix<heigth, width> &other)
 {
-	Vector<heigth * width>::operator+=(val);
+    _vector -= other._vector;
 	return *this;
 }
 
 template <u_short heigth, u_short width>
-Matrix<heigth, width>& Matrix<heigth, width>::operator-=(float val)
+inline Matrix<heigth, width> &Matrix<heigth, width>::operator-=(float val)
 {
-	Vector<heigth * width>::operator-=(val);
+    _vector -= val;
 	return *this;
 }
 
 template <u_short heigth, u_short width>
-Matrix<heigth, width>& Matrix<heigth, width>::operator*=(float val)
+inline Matrix<heigth, width> Matrix<heigth, width>::operator+(const Matrix<heigth, width> &other) const
 {
-	Vector<heigth * width>::operator*=(val);
+    Matrix<heigth, width> result = *this;
+	result += other;
+	return result;
+
+}
+
+template <u_short heigth, u_short width>
+inline Matrix<heigth, width> Matrix<heigth, width>::operator+(float val) const
+{
+    Matrix<heigth, width> result = *this;
+	result += val;
+	return result;
+}
+
+template <u_short heigth, u_short width>
+inline Matrix<heigth, width> Matrix<heigth, width>::operator-(const Matrix<heigth, width> &other) const
+{
+    Matrix<heigth, width> result = *this;
+	result -= other;
+	return result;
+}
+
+template <u_short heigth, u_short width>
+inline Matrix<heigth, width> Matrix<heigth, width>::operator-(float val) const
+{
+    Matrix<heigth, width> result = *this;
+	result -= val;
+	return result;
+}
+
+template <u_short heigth, u_short width>
+inline Matrix<heigth, width> &Matrix<heigth, width>::operator*=(float val)
+{
+    _vector += val;
 	return *this;
+}
+
+template <u_short heigth, u_short width>
+inline Matrix<heigth, width> Matrix<heigth, width>::operator*(float val) const
+{
+    Matrix<heigth, width> result = *this;
+	result *= val;
+	return result;
 }
 
 template <u_short heigth, u_short width> template <u_short other_width>
