@@ -9,7 +9,7 @@
 namespace Mat
 {
 
-using u_short = unsigned char;
+using u_short = unsigned short;
 using u_int = unsigned int;
 
 /// @brief Pair contatining Matrix dimensions: Heigth and Width
@@ -21,11 +21,11 @@ class Matrix
 public:
 	using Row = std::array<float, width>;
 	Matrix();
-	explicit Matrix(float val);
-	explicit Matrix(const std::array<float, heigth*width>& values);
+	Matrix(float val);
+	Matrix(const std::array<float, heigth*width>& values);
 
 	inline float& operator()(u_short row, u_short col);
-	inline const float& operator()(u_short row, u_short col) const;
+	inline float operator()(u_short row, u_short col) const;
 
 	inline bool operator== (const Matrix<heigth, width>& other) const;
 	inline bool operator!= (const Matrix<heigth, width>& other) const;
@@ -55,7 +55,7 @@ public:
 	inline u_int Size() {return heigth * width;}
 	inline const MatShape& Shape() const;
 	static constexpr MatShape shape{heigth, width};
-private:
+protected:
 	std::array<float, heigth*width> _values;
 };
 
@@ -88,7 +88,7 @@ float& Matrix<heigth, width>::operator()(u_short row, u_short col)
 }
 
 template <u_short heigth, u_short width>
-const float& Matrix<heigth, width>::operator()(u_short row, u_short col) const
+float Matrix<heigth, width>::operator()(u_short row, u_short col) const
 {
 	u_int index = width * row + col;
 	return _values[index];
@@ -216,7 +216,7 @@ void Matrix<heigth, width>::Multiply(const Matrix<width, other_width>& other, Ma
 
 	for(u_short row = 0; row < heigth; ++row)
 		for(u_short col = 0; col < other_width; ++col)
-			result(row, col) = Multiply_rows(this_rows[row], other_columns[col]);
+			result(row, col) = Multiply_rows<width>(this_rows[row], other_columns[col]);
 }
 
 template <u_short heigth, u_short width>

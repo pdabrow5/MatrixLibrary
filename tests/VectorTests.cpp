@@ -8,27 +8,27 @@
 
 using namespace Mat;
 
-TEST_CASE("Test default constructor", "[Vector]")
+TEST_CASE("Test default constructor", "[H_Vector]")
 {
-    CHECK_NOTHROW(Vector<1>());
-    CHECK_NOTHROW(Vector<65535>());
+    CHECK_NOTHROW(H_Vector<1>());
+    CHECK_NOTHROW(H_Vector<65535>());
 
-    Vector<65535> V1;
-    Vector<1> V2;
-    Vector<1234> V3;
+    H_Vector<65535> V1;
+    H_Vector<1> V2;
+    H_Vector<1234> V3;
     CHECK(V1.Size() == 65535);
     CHECK(V2.Size() == 1);
     CHECK(V3.Size() == 1234);
 }
 
-TEST_CASE("Test float constructor", "[Vector]")
+TEST_CASE("Test float constructor", "[H_Vector]")
 {
-    CHECK_NOTHROW(Vector<1>(5.0f));
-    CHECK_NOTHROW(Vector<65535>(-1.0f));
+    CHECK_NOTHROW(H_Vector<1>(5.0f));
+    CHECK_NOTHROW(H_Vector<65535>(-1.0f));
+    H_Vector<1> V2(-5.5f);
+    H_Vector<1234> V3(10001.0f);
+    H_Vector<65535> V1(1.0f);
 
-    Vector<65535> V1(1.0f);
-    Vector<1> V2(-5.5f);
-    Vector<1234> V3(10001.0f);
     CHECK(V1.Size() == 65535);
     CHECK(V2.Size() == 1);
     CHECK(V3.Size() == 1234);
@@ -38,14 +38,14 @@ TEST_CASE("Test float constructor", "[Vector]")
     CHECK(V3(1233) == 10001.0f);
 }
 
-TEST_CASE("Test array constructor", "[Vector]")
+TEST_CASE("Test array constructor", "[H_Vector]")
 {
-    CHECK_NOTHROW(Vector<3>({1.0f, 2.0f, 3.0f}));
-    CHECK_NOTHROW(Vector<1>({3.0f}));
+    CHECK_NOTHROW(H_Vector<3>({1.0f, 2.0f, 3.0f}));
+    CHECK_NOTHROW(H_Vector<1>({3.0f}));
 
-    Vector<1> V1({1.0f});
-    Vector<3> V2({1.0f, -1.0f}); //important point!!!
-    Vector<12> V3({1, 2, 3,
+    H_Vector<1> V1({1.0f});
+    H_Vector<3> V2({1.0f, -1.0f}); //important point!!!
+    H_Vector<12> V3({1, 2, 3,
                         4, 5, 6,
                         7, 8, 9,
                         10, 11, 12});
@@ -59,15 +59,15 @@ TEST_CASE("Test array constructor", "[Vector]")
     CHECK(V2(1) == -1.0f);
     CHECK(V2(2) == 0.0f); // unspecified element in initalizer list will have default value!!!
 
-    for(int i = 0; i < V3.Size(); ++i)
+    for(unsigned int i = 0; i < V3.Size(); ++i)
     {
         CHECK(V3(i) == (float)(i + 1));
     }
 }
 
-TEST_CASE("Test operator()", "[Vector]")
+TEST_CASE("Test operator()", "[H_Vector]")
 {
-    Vector<65535> V(123.0f);
+    H_Vector<65535> V(123.0f);
 
     CHECK(V(0) == V(65534));
     CHECK(V(0) == 123.0f);
@@ -79,47 +79,47 @@ TEST_CASE("Test operator()", "[Vector]")
     CHECK(V(0) == 0.0f);
 }
 
-TEST_CASE("Test operator+=(const Vector<length>& other)", "[Vector]")
+TEST_CASE("Test operator+=(const H_Vector<length>& other)", "[H_Vector]")
 {
-    Vector<5> V1({1, 2, 3, 4, 5});
-    const Vector<5> V2({5, 4, 3, 2, 1});
-    const Vector<5> V3(6);
+    H_Vector<5> V1({1, 2, 3, 4, 5});
+    const H_Vector<5> V2({5, 4, 3, 2, 1});
+    const H_Vector<5> V3(6);
     V1 += V2;
     CHECK(V1 == V3);
 
-    const Vector<5> V4({-1, -2, -3, -2, -1});
-    const Vector<5> V5({5, 4, 3, 4, 5});
+    const H_Vector<5> V4({-1, -2, -3, -2, -1});
+    const H_Vector<5> V5({5, 4, 3, 4, 5});
     V1 += V4;
     CHECK(V1 == V5);
 }
 
-TEST_CASE("Test operator+=(float val)", "[Vector]")
+TEST_CASE("Test operator+=(float val)", "[H_Vector]")
 {
-    Vector<5> V1({1, 2, 3, 4, 5});
-    const Vector<5> V2({2.5, 3.5, 4.5, 5.5, 6.5});
+    H_Vector<5> V1({1, 2, 3, 4, 5});
+    const H_Vector<5> V2({2.5, 3.5, 4.5, 5.5, 6.5});
     V1 += 1.5f;
     CHECK(V1 == V2);
 
-    Vector<5> V3({-1, -2, -3, -2, -1});
-    const Vector<5> V4({-3, -4, -5, -4, -3});
+    H_Vector<5> V3({-1, -2, -3, -2, -1});
+    const H_Vector<5> V4({-3, -4, -5, -4, -3});
     V3 += -2.0f;
     CHECK(V3 == V4);
 }
 
-TEST_CASE("Test Equals()", "[Vector]")
+TEST_CASE("Test Equals()", "[H_Vector]")
 {
-    const Vector<5> V1({1, 2, 3, 4, 5});
-    const Vector<5> V2({2.5, 3.5, 4.5, 5.5, 6.5});
+    const H_Vector<5> V1({1, 2, 3, 4, 5});
+    const H_Vector<5> V2({2.5, 3.5, 4.5, 5.5, 6.5});
     CHECK(V1.Equals(V2) == false);
     CHECK(V1.Equals(V2, 1.6) == true);
     CHECK(V1.Equals((V2 - 3.0f), 1.5001) == true); // V2 - 3 = {-0.5, 0.5, 1.5, 2.5, 3.5}
     CHECK(V1.Equals((V2 - 3.0f), 1.4999) == false); // V2 - 3 = {-0.5, 0.5, 1.5, 2.5, 3.5}
 }
 
-TEST_CASE("Test operator*=(float val)", "[Vector]")
+TEST_CASE("Test operator*=(float val)", "[H_Vector]")
 {
-    Vector<5> V1({1.5, 2.5, 3.5, 4.5, 5.5});
-    Vector<5> V2({4.5, 7.5, 10.5, 13.5, 16.5});
+    H_Vector<5> V1({1.5, 2.5, 3.5, 4.5, 5.5});
+    H_Vector<5> V2({4.5, 7.5, 10.5, 13.5, 16.5});
     V1 *= 2.0f;
     V1 *= 3.0f;
     V2 *= (2.0f / 3.0f);
@@ -127,25 +127,25 @@ TEST_CASE("Test operator*=(float val)", "[Vector]")
     CHECK(V1.Equals(V2));
 }
 
-TEST_CASE("Test operator*(const Vector<length>& other)", "[Vector]")
+TEST_CASE("Test operator*(const H_Vector<length>& other)", "[H_Vector]")
 {
-    Vector<5> V1({1.5, 2.5, 3.5, 4.5, 5.5});
-    Vector<5> V2({4.5, 7.5, 10.5, 13.5, 16.5});
-    CHECK((V1 * V2) == 213.75);
+    V_Vector<5> V1({1.5, 2.5, 3.5, 4.5, 5.5});
+    H_Vector<5> V2({4.5, 7.5, 10.5, 13.5, 16.5});
+    CHECK((V2 * V1) == 213.75);
 
-    Vector<2> V3(-1.0f);
-    Vector<2> V4(3.5);
-    CHECK((V3 * V4) == -7.0f);
+    V_Vector<2> V3(-1.0f);
+    H_Vector<2> V4(3.5);
+    CHECK((V4 * V3) == -7.0f);
 }
 
-TEST_CASE("Test Norm()", "[Vector]")
+TEST_CASE("Test Norm()", "[H_Vector]")
 {
-    Vector<100> V(1);
+    H_Vector<100> V(1);
     CHECK(V.Norm() == 10.0f);
 
-    Vector<5> V1({1.5, 2.5, 3.5, 4.5, 5.5});
-    CHECK(std::sqrt(V1 * V1) == V1.Norm());
+    H_Vector<5> V1({1.5, 2.5, 3.5, 4.5, 5.5});
+    CHECK(std::sqrt(V1 * V1.Transpose()) == V1.Norm());
 
-    Vector<5> V2({4.5, 7.5, 10.5, 13.5, 16.5});
-    CHECK(std::sqrt(V2 * V2) == V2.Norm());
+    H_Vector<5> V2({4.5, 7.5, 10.5, 13.5, 16.5});
+    CHECK(std::sqrt(V2 * V2.Transpose()) == V2.Norm());
 }
